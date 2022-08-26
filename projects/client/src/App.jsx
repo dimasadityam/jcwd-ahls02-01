@@ -8,7 +8,6 @@ import { keepLogin } from './Redux/Actions/userActions';
 import LandingPage from "./Pages/Users/LandingPage";
 import Register from "./Pages/Users/Register";
 import NotFoundPage from "./Pages/Users/404";
-import Verification from "./Pages/Users/Verification";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -36,7 +35,6 @@ function App() {
         {
           token ?
           <>
-            <Route path='/verification/:token' element={<Verification />} />
             <Route path='/' element={<LandingPage />} />
           </>
         :

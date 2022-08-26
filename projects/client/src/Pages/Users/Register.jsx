@@ -6,7 +6,7 @@ import logo from "../../Assets/DevImage/LogoMedhika.png";
 import NavbarComponent from "../../Components/Users/Navbar";
 import { Flex, Box, Heading, Input, Image, Text, Divider, Spacer, ButtonGroup, Button, Link, extendTheme, InputGroup, InputLeftElement,
   InputRightElement, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Popover,
-  PopoverTrigger, PopoverContent, PopoverHeader, PopoverArrow, PopoverCloseButton, PopoverBody, PopoverFooter } from '@chakra-ui/react';
+  PopoverTrigger, PopoverContent, PopoverHeader, PopoverArrow, PopoverCloseButton, PopoverBody, PopoverFooter, InputLeftAddon } from '@chakra-ui/react';
 // import { PhoneIcon } from '@chakra-ui/icons'
 import { BsTelephone } from 'react-icons/bs';
 import { useDisclosure, useToast } from '@chakra-ui/react';
@@ -48,11 +48,9 @@ const Register=()=>{
 
   const handleRegister =async()=>{
     try {
-      // setDisable(!disable)
       setLoadingStat(true)
       checkStrongPassword();
       if (name=="" || phone=="" || email=="" || password=="" || confirmPassword==""){
-        // alert("Fill in all form")
         newToast({
           title: 'Registrasi Tidak Berhasil.',
           description: 'Mohon isi semua data registrasi',
@@ -67,13 +65,20 @@ const Register=()=>{
             status: 'error',
           })
           setLoadingStat(false)
+        } else if (phone.length < 10){
+          newToast({
+            title: 'Registrasi Tidak Berhasil.',
+            description: 'Isi dengan nomor telfon aktif',
+            status: 'error',
+          })
+          setLoadingStat(false)
         } else if(email.includes("@")){
           let res = await Axios.post(`${API_URL}/users/register`, {
             name: name,
             email: email,
             password: password,
             role: "user",
-            phone: phone,
+            phone: `+62${phone}`,
             profilePicture: "https://sman11tangerangselatan.sch.id/images/user-u.jpg",
             isVerified:"unverified"
           })
@@ -89,37 +94,24 @@ const Register=()=>{
             localStorage.setItem("tokenIdUser", res.data.token)
             dispatch(loginAction(res.data))
             setLoadingStat(false)
-            // alert(`registration success,
-            // verified your account with link verification in email`)
-            // console.log("token2 regis", token)
-            // setDisable(!disable)
             navigate("/")
           }
         } else {
-          // alert("Email Wrong")
           newToast({
             title: 'Registrasi Tidak Berhasil.',
             description: 'Format email salah, mohon memasukan sesuai format email',
             status: 'error',
           })
           setLoadingStat(false)
-          // setOpenToast(!openToast)
-          // setToastMsg(`Email Wrong!`)
-          // setDisable(!disable)
         }
       }    
     } catch (err) {
-      // setOpenToast(!openToast)
-      // setToastMsg(`${error.response.data.message}`)
       newToast({
         title: 'Registrasi Tidak Berhasil.',
         description: err.response.data.message,
         status: 'error',
       })
       setLoadingStat(false)
-      // alert(err.response.data.message)
-      // console.log(disable)
-      // setDisable(!disable)
   }
   }
 
@@ -132,8 +124,6 @@ const Register=()=>{
     } else {
       setPasswordLength(false)
     }
-    // console.log("cek password.length",inForm.password.length)
-    // console.log(inForm.password)
   }
 
   const checkStrongPassword =()=>{
@@ -148,15 +138,10 @@ const Register=()=>{
           position: 'top',
           isClosable: true,
         })
-        // alert("Weak password")
-        // setOpenToast(!openToast)
-        // setToastMsg(`Weak Password !
-        // plaase create strong password.`)
   }
 }
 
 const checkUpperCase=()=>{
-  // console.log("cek uppercase", isUpperCase)
   if (inForm.password.match(/^(?=.*[A-Z])/)){
     setIsUpperCase(true)
   } else {
@@ -165,7 +150,6 @@ const checkUpperCase=()=>{
 }
 
 const checkNumbers=()=>{
-  // console.log("cek number", containsNumbers)
   if (inForm.password.match(/\d+/g)){
     setContainsNumbers(true)
   } else {
@@ -179,11 +163,9 @@ const checkNumbers=()=>{
       <NavbarComponent/>
     </Box>
     <div class="container">
-      {/* <Image src={logo} width='10%' style={{marginLeft:"10px", marginTop:"25px"}}/> */}
       <div class="text-center mt-4">
         <Text class="h4">Mari daftarkan akun Anda !</Text>
         <Text class="h4">agar memudahkan saat transaksi obat</Text>
-        {/* <Divider borderWidth={"1px"} borderColor={"#333333"} style={{marginTop:"15px"}}/> */}
       </div>
       <div class="row mt-5">
         <div class="col-6">      
@@ -199,12 +181,8 @@ const checkNumbers=()=>{
               <Box marginTop={"20px"}>
                 <Text class="h6b">Nomor Handphone</Text>
                 <InputGroup>
-                  <InputLeftElement
-                    pointerEvents='none'
-                    // BsTelephone
-                    children={<BsTelephone color='gray.300' />}
-                  />
-                  <Input bgColor={"#FFFFFF"} boxShadow='md' type='tel' placeholder='Phone number' onChange={(e)=>setPhone(e.target.value)} />
+                  <InputLeftAddon children='+62'/>
+                  <Input bgColor={"#FFFFFF"} boxShadow='md' type='tel' placeholder='phone number' onChange={(e)=>setPhone(e.target.value)} />
                 </InputGroup>
               </Box>
               <Box marginTop={"20px"}>
@@ -212,13 +190,6 @@ const checkNumbers=()=>{
                 <Input bgColor={"#FFFFFF"} boxShadow='md' placeholder='contoh@mail.com' onChange={(e)=>setEmail(e.target.value)} />
               </Box>
               <Box marginTop={"20px"}>
-              {/* <Popover
-                returnFocusOnClose={false}
-                isOpen={isOpen}
-                // onClose={onClose}
-                placement='left'
-                closeOnBlur={false}
-              > */}
                 <Text class="h6b">Password</Text>
                   <InputGroup size='md'>
                     <Input bgColor={"#FFFFFF"} boxShadow='md'
@@ -232,16 +203,6 @@ const checkNumbers=()=>{
                       </Button>
                     </InputRightElement>
                   </InputGroup>
-                {/* <PopoverTrigger>
-                </PopoverTrigger>
-                <PopoverContent boxShadow='md'>
-                  <PopoverHeader bgColor={"#DE1B51"} fontWeight='bold' color={"#FFFFFF"}>Password Anda Lemah !</PopoverHeader>
-                  <PopoverArrow />
-                  <PopoverCloseButton color={"#FFFFFF"} onClick={onToggle} />
-                  <PopoverBody fontWeight='semibold' color={"#DE1B51"}>
-                    Dalam membuat password setidaknya miliki 1 Huruf Kapital, Kombinasi Huruf Dengan Angka & 8 Huruf
-                  </PopoverBody>
-                </PopoverContent> */}
                 <div>
                   <div class="h6 mt-3">Password yang kuat setidaknya harus :</div>
                   <span class={passwordLength ? 'h6r' : 'h6'}> 8 huruf</span>
@@ -250,7 +211,6 @@ const checkNumbers=()=>{
                   <span class="h6"> dan </span>
                   <span class={containsNumbers ? 'h6r' : 'h6'}>Angka</span>
                 </div>
-              {/* </Popover> */}
               </Box>
               <Box marginTop={"20px"}>
                 <Text class="h6b">Konfirmasi Password</Text>
